@@ -19,6 +19,7 @@
     </head>
     <body>
        
+       
         <style>.e-file-select-wrap {
             display: none;
         }
@@ -39,44 +40,40 @@
                 }
         .pan-item{
                     margin-left: 3px;
-                }   
+                }
+        .diagram-menu-control {
+        text-align: left;
+        }  
+        #diagram-menu {
+          float: left;
+          margin-right: 0px;
+          background-color: #046AE5;
+          color:#ffffff;
+        }
+       
+        #diagram-menu li {
+        transition: color 0.2s ease; /* Smooth transition for color change */
+        }
+
+        #diagram-menu li:hover {
+        color: #046AE5; /* Text turns blue when hovered over */
+        cursor: pointer; /* Changes cursor to hand pointer on hover */
+        }
+
         </style>
-         <!-- <div class="sb-content-overlay">
-            <div class="sb-loading">
-                <svg class="circular" height="40" width="40">
-                    <circle class="loadingPath" cx="25" cy="25" r="20" fill="none" stroke-width="6" stroke-miterlimit="10"></circle>
-                </svg>
-            </div>
-        </div>
-        <div id="content-area" style="height: 100%">
-        </div> -->
-     <input type="file" id="fileupload" name="UploadFiles">
-     <ul id = "designContextMenu"></ul>
+        
+    <input type="file" id="fileupload" name="UploadFiles">
     <div class='diagrambuilder-container' >
         <div class='header navbar'>
             <div class="db-header-container">
                 <div class="db-diagram-name-container">
-                    <span id='diagramName' style="width:250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" class="db-diagram-name" onclick="renameDiagram(event)">Untitled Diagram</span>
-                    <input id='diagramEditable' type="text" class="db-diagram-name" onkeydown="diagramNameKeyDown(event)" onfocusout= "diagramNameChange(event)"/>
+                    <h1 id='diagramName' style="width:250px; overflow: hidden; font-weight: 400; height: 13px; text-overflow: ellipsis; white-space: nowrap;" class="db-diagram-name" >Untitled Diagram</h1>
+                    <input id='diagramEditable' type="text" class="db-diagram-name" />
                     <span id='diagramreport' class="db-diagram-name db-save-text"></span>
                 </div>
-                <div class='db-menu-container'>
-                    <div class="db-menu-style">
-                        <button id="btnFileMenu"></button>
-                    </div>
-                    <div class="db-menu-style">
-                        <button id="btnEditMenu"></button>
-                    </div>
-                    <div class="db-menu-style">
-                        <button id="btnInsertMenu"></button>
-                    </div>
-                    <div class="db-menu-style">
-                        <button id="btnDesignMenu"></button>
-                    </div>
-                    <div class="db-menu-style">
-                        <button id="btnViewMenu"></button>
-                    </div>   
-                </div>
+            <div class="diagram-menu-control">
+                <ul class="menu-control" id="diagram-menu"></ul>
+            </div>               
             </div>
             <div class='db-toolbar-editor' >
                 <div class='db-toolbar-container'>
@@ -104,7 +101,7 @@
                         <div id='diagramPropertyContainer' class="db-diagram-prop-container">
                             <div class="row db-prop-header-text">
                                 Page Settings
-                                <button class="close" onclick="UtilityMethods.prototype.hideElements('hide-properties',diagram)"><i style="width: 20px;height: 20px;font-size:20px" class="sf-icon-close"></i></button>
+                                <button class="close" onclick="hideClicked()" id="pageSetting"><i style="width: 20px;height: 20px;font-size:20px" class="sf-icon-close"></i></button>
                             </div>
                             <div class="db-prop-separator" style="background-color: #b5b5b5;margin-bottom: 10px;">
                             </div>
@@ -172,7 +169,7 @@
                             <div class="db-node-behaviour-prop" id="dimen">
                                 <div class="row db-prop-header-text">
                                     Properties
-                                    <button class="close" onclick="UtilityMethods.prototype.hideElements('hide-properties',diagram)"><i style="width: 20px;height: 20px;font-size:20px" class="sf-icon-close"></i></button>
+                                    <button class="close" onclick="hideClicked()" id="property"><i style="width: 20px;height: 20px;font-size:20px" class="sf-icon-close"></i></button>
                                 </div>
                                 <div class="db-prop-separator" style="background-color: #b5b5b5;margin-bottom: 10px;">
                                 </div>
@@ -271,6 +268,7 @@
                                 <div class="row db-border-style">
                                     <div class="row db-prop-header-text db-border-style-header">
                                         Border/Line Styles
+                                        <button class="close" onclick="hideClicked()"><i style="width: 20px;height: 20px;font-size:20px" class="sf-icon-close"></i></button>
                                     </div>
                                     <div class="row db-prop-row">
                                         <div class="col-xs-6 db-col-right" >
@@ -318,12 +316,10 @@
                             <div id='connectorPropertyContainer' class="db-connector-prop-container" style="display:none">
                                 <div class="row db-prop-header-text">
                                     Connector Properties
+                                    <button class="close" onclick="hideClicked()" id="connProperty"><i style="width: 20px;height: 20px;font-size:20px" class="sf-icon-close"></i></button>
                                 </div>
                                 <div class="db-prop-separator" style="background-color: #b5b5b5;"></div>
                                 <div class="row db-prop-row">
-                                    <!-- <div class="col-xs-6 db-col-left db-prop-text-style">
-                                        <span class="db-prop-text-style">Connector Type</span>
-                                    </div> -->
                                     <div class="col-xs-6 db-col-left db-prop-text-style">
                                         <span class="db-prop-text-style">Line color</span>
                                     </div>
@@ -332,18 +328,11 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <!-- <div class="col-xs-6 db-col-left">
-                                            <input type="text" id='lineTypeDropdown' />
-                                    </div> -->
                                     <div class="col-xs-6 db-col-left">
                                         <div class="db-color-container">
                                             <div class="db-color-input">
                                                 <input id="lineColor" type="color">
                                             </div>
-                                            <!-- <div class="db-color-btn">
-                                                    <button id="lineColorIconBtn"></button>
-                                            </div> -->
-                                          
                                         </div>
                                     </div>
                                     <div class="col-xs-6 db-col-right">
@@ -354,21 +343,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="row db-prop-row">
-                                    
-                                </div> -->
-                               
-                                <!-- <div class="row">
-                                    <div class="col-xs-4 db-col-right">
-                                            <input id="lineWidth" type="text" />
-                                    </div>
-                                </div> -->
                                 <div class="row db-prop-row">
-                                    <div class="col-xs-2 db-col-right db-prop-text-style" style="margin-right: 3px;padding-top: 6px">
+                                    <div class="col-xs-2 db-col-right db-prop-text-style" style="margin-right: 5px;padding-top: 6px">
                                         <span class="db-prop-text-style">Opacity</span>
                                     </div>
                                     <div class="col-xs-8 db-col-left" style="width: 120px;padding-right:10px;margin-left: 10px;">
-                                            <div id='default1'></div>
+                                            <div id='connectorOpacityText'></div>
                                     </div>
                                     <div class="col-xs-2 db-col-left" style="width:50px">
                                         <input type="text" id="connectorOpacitySliderText" value= '100%' readonly="true" class="db-readonly-input" />
@@ -419,7 +399,7 @@
                                 <div class="row db-prop-row" id='toolbarTextAlignmentDiv'>
                                         <div id="toolbarTextAlignment"></div>
                                 </div>
-                                <div class="row db-prop-row">
+                                <div class="row db-prop-row" id="textOpacityProperty">
                                     <div class="col-xs-2 db-col-right db-prop-text-style" style="margin-right: 3px;padding-top: 6px">
                                         <span class="db-prop-text-style">Opacity</span>
                                     </div>
@@ -430,7 +410,6 @@
                                         <input id='textOpacityText' type="text" value='100%' class="db-readonly-input" readOnly="true"/>
                                     </div>
                                 </div>
-                                <!-- <div class="db-prop-separator" style="background-color: #b5b5b5;"></div> -->
                             </div>
                             </div>
                     </div> 
@@ -441,7 +420,6 @@
     </div>
     <div id="hyperlinkDialog"></div>
     <div id="exportDialog"></div>
-    <div id="printDialog"></div>
     <div id="fileUploadDialog"></div>
     <script src="./scripts/events.js" type="text/javascript"></script>
     <script src="./scripts/dropdowndatasource.js" type="text/javascript"></script>
